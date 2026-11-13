@@ -21,7 +21,8 @@ def load_model():
 def supabase():
     try:
         return get_client(admin=False)
-    except Exception:
+    except Exception as e:
+        print(f"[creditwise] Supabase client error: {type(e).__name__}: {e}", flush=True)
         return None
 
 
@@ -99,13 +100,19 @@ if submitted:
 
     if consent:
         client = supabase()
-        if client:
+        if client is None:
+            supabase.clear()  # don't keep a missing client cached; retry after secrets are fixed
+            print("[creditwise] Supabase not configured: check SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY secrets", flush=True)
+            st.caption("Note: your result could not be saved this time.")
+        else:
             row = {DB_COLUMNS[k]: v for k, v in applicant.items()}
             row.update(predicted_approved=bool(approved), approval_probability=round(prob, 4),
                        model_name=bundle["model_name"], model_version=bundle["version"])
             try:
                 client.table("predictions").insert(row, returning=ReturnMethod.minimal).execute()  # anon may insert, not read back
+                st.caption("Your check was saved anonymously. Thank you!")
             except Exception as e:
+                supabase.clear()  # rebuild the client next time (e.g. after secrets change)
                 print(f"[creditwise] Supabase insert failed: {type(e).__name__}: {e}", flush=True)
                 st.caption("Note: your result could not be saved this time.")
 
