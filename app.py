@@ -105,7 +105,8 @@ if submitted:
                        model_name=bundle["model_name"], model_version=bundle["version"])
             try:
                 client.table("predictions").insert(row, returning=ReturnMethod.minimal).execute()  # anon may insert, not read back
-            except Exception:
+            except Exception as e:
+                print(f"[creditwise] Supabase insert failed: {type(e).__name__}: {e}", flush=True)
                 st.caption("Note: your result could not be saved this time.")
 
 with st.expander("About the model"):
