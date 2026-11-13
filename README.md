@@ -1,5 +1,7 @@
 # CreditWise Loan System
 
+**🚀 Live app: [creditwiseloansystemml.streamlit.app](https://creditwiseloansystemml.streamlit.app/)**
+
 A machine-learning loan approval checker. Applicants enter their details on a Streamlit website and get an instant **Approved / Rejected** prediction with an approval probability. The data and every prediction are stored in **Supabase**.
 
 The original analysis is in [`CreditWiseLoanApprovalSystem.ipynb`](CreditWiseLoanApprovalSystem.ipynb) and the brief is in [`CreditWise Loan System PS.pdf`](CreditWise%20Loan%20System%20PS.pdf).
